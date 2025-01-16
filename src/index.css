@@ -136,6 +136,11 @@ th:hover {
   color: #00003c;
   font-weight: 700;
   width: 100px;
+  cursor: pointer;
+}
+
+.pagination button:hover {
+  background-color: #1ed2aea8;
 }
 
 .pagination button[disabled] {
