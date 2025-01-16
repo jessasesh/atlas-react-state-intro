@@ -114,9 +114,12 @@ table > tfoot:not(:last-child) {
   border-bottom: var(--border);
 }
 
-th.selected {
-  background: #00003c;
-  color: #fef9e6;
+th {
+  cursor: pointer;
+}
+
+th:hover {
+  background-color: #ffffff42;
 }
 
 .pagination {
