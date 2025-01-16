@@ -6,9 +6,13 @@ export default function SchoolCatalog() {
   // State that holds search query
   const [searchQuery, setSearchQuery] = useState('');
   // State to track column to be sorted by
-  const [sortKey, setSortKey] = useState("trimester");
+  const [sortKey, setSortKey] = useState('');
   // State to track sort direction
   const [sortDirection, setSortDirection] = useState("asc");
+  // State to track the active page for pagination
+  const [activePage, setActivePage] = useState(0);
+  // Rows per page
+  const rowsPerPage = 5;
 
   // Fetch data when component mounts
   useEffect(() => {
@@ -63,6 +67,25 @@ export default function SchoolCatalog() {
     }
   };
 
+  // Courses to display
+  const currentCourses = filteredCourses.slice(
+    activePage * rowsPerPage,
+    (activePage + 1) * rowsPerPage
+  );
+
+  // Handle pagination logic
+  const handleNextPage = () => {
+    if ((activePage + 1) * rowsPerPage < filteredCourses.length) {
+      setActivePage((prevPage) => prevPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (activePage > 0) {
+      setActivePage((prevPage) => prevPage - 1);
+    }
+  };
+
   return (
     <div className="school-catalog">
       <h1>School Catalog</h1>
@@ -84,7 +107,7 @@ export default function SchoolCatalog() {
           </tr>
         </thead>
         <tbody>
-          {filteredCourses.map((course, index) => (
+          {currentCourses.map((course, index) => (
             <tr key={index}>
               <td>{course.trimester}</td>
               <td>{course.courseNumber}</td>
@@ -99,8 +122,15 @@ export default function SchoolCatalog() {
         </tbody>
       </table>
       <div className="pagination">
-        <button>Previous</button>
-        <button>Next</button>
+        <button onClick={handlePreviousPage} disabled={activePage === 0}>
+          Previous
+        </button>
+        <button
+          onClick={handleNextPage}
+          disabled={(activePage + 1) * rowsPerPage >= filteredCourses.length}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
