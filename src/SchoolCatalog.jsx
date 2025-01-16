@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 
 export default function SchoolCatalog() {
-// State that holds the courses data
+  // State that holds the courses data
   const [courses, setCourses] = useState([]);
+  // State that holds search query
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch data when component mounts
   useEffect(() => {
@@ -16,10 +18,30 @@ export default function SchoolCatalog() {
       });
   }, []);
 
+  const updateSearchQuery = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  // Filter courses based on the search query
+  const filteredCourses = courses.filter((course) => {
+    const courseNumber = course.courseNumber.toLowerCase();
+    const courseName = course.courseName.toLowerCase();
+    const query = searchQuery.toLowerCase();
+
+    return (
+      courseNumber.includes(query) || courseName.includes(query)
+    );
+  });
+
   return (
     <div className="school-catalog">
       <h1>School Catalog</h1>
-      <input type="text" placeholder="Search" />
+      <input
+        type="text"
+        placeholder="Search"
+        value={searchQuery}
+        onChange={updateSearchQuery}
+      />
       <table>
         <thead>
           <tr>
@@ -32,7 +54,7 @@ export default function SchoolCatalog() {
           </tr>
         </thead>
         <tbody>
-          {courses.map((course, index) => (
+          {filteredCourses.map((course, index) => (
             <tr key={index}>
               <td>{course.trimester}</td>
               <td>{course.courseNumber}</td>
