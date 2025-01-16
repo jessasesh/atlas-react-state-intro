@@ -5,6 +5,10 @@ export default function SchoolCatalog() {
   const [courses, setCourses] = useState([]);
   // State that holds search query
   const [searchQuery, setSearchQuery] = useState('');
+  // State to track column to be sorted by
+  const [sortKey, setSortKey] = useState("trimester");
+  // State to track sort direction
+  const [sortDirection, setSortDirection] = useState("asc");
 
   // Fetch data when component mounts
   useEffect(() => {
@@ -22,16 +26,42 @@ export default function SchoolCatalog() {
     setSearchQuery(e.target.value);
   };
 
-  // Filter courses based on the search query
-  const filteredCourses = courses.filter((course) => {
-    const courseNumber = course.courseNumber.toLowerCase();
-    const courseName = course.courseName.toLowerCase();
-    const query = searchQuery.toLowerCase();
+  // Sorting the courses based on current sortKey and sortDirection
+  const sortedCourses = [...courses].sort((a, b) => {
+    const aValue = a[sortKey];
+    const bValue = b[sortKey];
 
+    if (typeof aValue === "string") {
+      return sortDirection === "asc"
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
+    }
+    if (typeof aValue === "number") {
+      return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+    }
+    return 0;
+  });
+
+  // Filter courses based on the search query
+  const filteredCourses = sortedCourses.filter((course) => {
+    const query = searchQuery.toLowerCase();
     return (
-      courseNumber.includes(query) || courseName.includes(query)
+      course.courseNumber.toLowerCase().includes(query) ||
+      course.courseName.toLowerCase().includes(query)
     );
   });
+
+  // Handle sort toggle when column header is clicked
+  const handleSortChange = (key) => {
+    if (sortKey === key) {
+      setSortDirection((prevDirection) =>
+        prevDirection === "asc" ? "desc" : "asc"
+      );
+    } else {
+      setSortKey(key);
+      setSortDirection("asc");
+    }
+  };
 
   return (
     <div className="school-catalog">
@@ -45,11 +75,11 @@ export default function SchoolCatalog() {
       <table>
         <thead>
           <tr>
-            <th>Trimester</th>
-            <th>Course Number</th>
-            <th>Courses Name</th>
-            <th>Semester Credits</th>
-            <th>Total Clock Hours</th>
+            <th onClick={() => handleSortChange('trimester')}>Trimester</th>
+            <th onClick={() => handleSortChange('courseNumber')}>Course Number</th>
+            <th onClick={() => handleSortChange('courseName')}>Course Name</th>
+            <th onClick={() => handleSortChange('semesterCredits')}>Semester Credits</th>
+            <th onClick={() => handleSortChange('totalClockHours')}>Total Clock Hours</th>
             <th>Enroll</th>
           </tr>
         </thead>
