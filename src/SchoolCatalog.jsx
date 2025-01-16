@@ -1,4 +1,21 @@
+import React, { useState, useEffect } from "react";
+
 export default function SchoolCatalog() {
+// State that holds the courses data
+  const [courses, setCourses] = useState([]);
+
+  // Fetch data when component mounts
+  useEffect(() => {
+    fetch('/api/courses.json')
+      .then((response) => response.json())
+      .then((data) => {
+        setCourses(data);
+      })
+      .catch((error) => {
+        console.error('Error when fetching data:', error);
+      });
+  }, []);
+
   return (
     <div className="school-catalog">
       <h1>School Catalog</h1>
@@ -15,36 +32,18 @@ export default function SchoolCatalog() {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>PP1000</td>
-            <td>Beginning Procedural Programming</td>
-            <td>2</td>
-            <td>30</td>
-            <td>
-              <button>Enroll</button>
-            </td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>PP1100</td>
-            <td>Basic Procedural Programming</td>
-            <td>4</td>
-            <td>50</td>
-            <td>
-              <button>Enroll</button>
-            </td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>OS1000</td>
-            <td>Fundamentals of Open Source Operating Systems</td>
-            <td>2.5</td>
-            <td>37.5</td>
-            <td>
-              <button>Enroll</button>
-            </td>
-          </tr>
+          {courses.map((course, index) => (
+            <tr key={index}>
+              <td>{course.trimester}</td>
+              <td>{course.courseNumber}</td>
+              <td>{course.courseName}</td>
+              <td>{course.semesterCredits}</td>
+              <td>{course.totalClockHours}</td>
+              <td>
+                <button>Enroll</button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
       <div className="pagination">
